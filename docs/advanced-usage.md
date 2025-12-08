@@ -159,7 +159,7 @@ jobs:
 
 ## Nightly versions
 
-You can specify a nightly version to download it from https://nodejs.org/download/nightly. 
+You can specify a nightly version to download it from https://cdn.npmmirror.com/binaries/node/download/nightly. 
 
 ### Install the nightly build for a major version
 

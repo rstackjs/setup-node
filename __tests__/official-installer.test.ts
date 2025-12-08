@@ -344,7 +344,7 @@ describe('setup-node', () => {
       `Attempting to download ${versionSpec}...`
     );
     expect(logSpy).toHaveBeenCalledWith(
-      'Not found in manifest. Falling back to download directly from Node'
+      'Not found in manifest. Falling back to download directly from https://cdn.npmmirror.com/binaries/node'
     );
     expect(dlSpy).toHaveBeenCalled();
     expect(exSpy).toHaveBeenCalled();
@@ -362,7 +362,7 @@ describe('setup-node', () => {
     await main.run();
 
     expect(logSpy).toHaveBeenCalledWith(
-      'Not found in manifest. Falling back to download directly from Node'
+      'Not found in manifest. Falling back to download directly from https://cdn.npmmirror.com/binaries/node'
     );
     expect(logSpy).toHaveBeenCalledWith(
       `Attempting to download ${versionSpec}...`

@@ -14,3 +14,5 @@ export enum State {
 export enum Outputs {
   CacheHit = 'cache-hit'
 }
+
+export const DEFAULT_NODE_MIRROR = 'https://cdn.npmmirror.com/binaries/node';
