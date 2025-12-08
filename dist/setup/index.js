@@ -50261,10 +50261,10 @@ var Distributions;
 })(Distributions || (Distributions = {}));
 function getNodejsDistribution(installerOptions) {
     const versionSpec = installerOptions.versionSpec;
-    if (versionSpec.includes(Distributions.NIGHTLY ||
+    if (versionSpec.includes(Distributions.NIGHTLY) ||
         versionSpec.includes(Distributions.CANARY) ||
-        versionSpec.includes(Distributions.RC))) {
-        throw Error('Only Offical Build supported for now');
+        versionSpec.includes(Distributions.RC)) {
+        throw Error('Only Official Build supported for now');
     }
     else {
         return new official_builds_1.default(installerOptions);
@@ -50331,16 +50331,10 @@ class OfficialBuilds extends base_distribution_1.default {
         let nodeJsVersions;
         const osArch = this.translateArchToDistUrl(this.nodeInfo.arch);
         if (this.isLtsAlias(this.nodeInfo.versionSpec)) {
-            core.info('Attempt to resolve LTS alias from manifest...');
-            // No try-catch since it's not possible to resolve LTS alias without manifest
-            manifest = await this.getManifest();
-            this.nodeInfo.versionSpec = this.resolveLtsAliasFromManifest(this.nodeInfo.versionSpec, this.nodeInfo.stable, manifest);
+            throw Error('lts/* version spec is not supported anymore.');
         }
         if (this.isLatestSyntax(this.nodeInfo.versionSpec)) {
-            nodeJsVersions = await this.getNodeJsVersions();
-            const versions = this.filterVersions(nodeJsVersions);
-            this.nodeInfo.versionSpec = this.evaluateVersions(versions);
-            core.info('getting latest node version...');
+            throw Error("'current/latest' version spec is not supported anymore.");
         }
         if (this.nodeInfo.checkLatest) {
             core.info('Attempt to resolve the latest version from manifest...');
@@ -50359,16 +50353,12 @@ class OfficialBuilds extends base_distribution_1.default {
             this.addToolPath(toolPath);
             return;
         }
-        let downloadPath = '';
         try {
             core.info(`Attempting to download ${this.nodeInfo.versionSpec}...`);
             const versionInfo = await this.getInfoFromManifest(this.nodeInfo.versionSpec, this.nodeInfo.stable, osArch, manifest);
             if (versionInfo) {
-                core.info(`Acquiring ${versionInfo.resolvedVersion} - ${versionInfo.arch} from ${versionInfo.downloadUrl}`);
-                downloadPath = await tc.downloadTool(versionInfo.downloadUrl, undefined, this.nodeInfo.mirror ? this.nodeInfo.mirrorToken : this.nodeInfo.auth);
-                if (downloadPath) {
-                    toolPath = await this.extractArchive(downloadPath, versionInfo, false);
-                }
+                this.nodeInfo.versionSpec = versionInfo.resolvedVersion;
+                core.info(`Resolved ${versionInfo.resolvedVersion} from manifest. Preparing to download from ${this.getFallbackDisplayUrl()}.`);
             }
             else {
                 core.info(`Not found in manifest. Falling back to download directly from ${this.getFallbackDisplayUrl()}`);
@@ -50431,15 +50421,10 @@ class OfficialBuilds extends base_distribution_1.default {
         return version;
     }
     getDistributionUrl(mirror) {
-        if (mirror) {
-            return `${mirror.replace(/\/$/, '')}/dist`;
-        }
         return constants_1.DEFAULT_NODE_MIRROR;
     }
     getFallbackDisplayUrl() {
-        return this.nodeInfo.mirror
-            ? this.nodeInfo.mirror.replace(/\/$/, '')
-            : constants_1.DEFAULT_NODE_MIRROR;
+        return constants_1.DEFAULT_NODE_MIRROR;
     }
     getManifest() {
         core.debug('Getting manifest from actions/node-versions@main');

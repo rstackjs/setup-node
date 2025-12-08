@@ -54,7 +54,6 @@ export default class OfficialBuilds extends BaseDistribution {
       return;
     }
 
-    let downloadPath = '';
     try {
       core.info(`Attempting to download ${this.nodeInfo.versionSpec}...`);
 
@@ -66,22 +65,10 @@ export default class OfficialBuilds extends BaseDistribution {
       );
 
       if (versionInfo) {
+        this.nodeInfo.versionSpec = versionInfo.resolvedVersion;
         core.info(
-          `Acquiring ${versionInfo.resolvedVersion} - ${versionInfo.arch} from ${versionInfo.downloadUrl}`
+          `Resolved ${versionInfo.resolvedVersion} from manifest. Preparing to download from ${this.getFallbackDisplayUrl()}.`
         );
-        downloadPath = await tc.downloadTool(
-          versionInfo.downloadUrl,
-          undefined,
-          this.nodeInfo.mirror ? this.nodeInfo.mirrorToken : this.nodeInfo.auth
-        );
-
-        if (downloadPath) {
-          toolPath = await this.extractArchive(
-            downloadPath,
-            versionInfo,
-            false
-          );
-        }
       } else {
         core.info(
           `Not found in manifest. Falling back to download directly from ${this.getFallbackDisplayUrl()}`
@@ -167,17 +154,11 @@ export default class OfficialBuilds extends BaseDistribution {
   }
 
   protected getDistributionUrl(mirror: string): string {
-    if (mirror) {
-      return `${mirror.replace(/\/$/, '')}/dist`;
-    }
-
     return DEFAULT_NODE_MIRROR;
   }
 
   private getFallbackDisplayUrl(): string {
-    return this.nodeInfo.mirror
-      ? this.nodeInfo.mirror.replace(/\/$/, '')
-      : DEFAULT_NODE_MIRROR;
+    return DEFAULT_NODE_MIRROR;
   }
 
   private getManifest(): Promise<tc.IToolRelease[]> {
