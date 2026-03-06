@@ -5,9 +5,11 @@
 [![e2e-cache](https://github.com/actions/setup-node/actions/workflows/e2e-cache.yml/badge.svg?branch=main)](https://github.com/actions/setup-node/actions/workflows/e2e-cache.yml)
 [![proxy](https://github.com/actions/setup-node/actions/workflows/proxy.yml/badge.svg)](https://github.com/actions/setup-node/actions/workflows/proxy.yml)
 
+> **Fork of [actions/setup-node](https://github.com/actions/setup-node)** — Node.js binaries are downloaded from the [cnpm mirror](https://cdn.npmmirror.com/binaries/node/) instead of the official Node.js dist, which significantly improves download speed in some self-hosted network environments.
+
 This action provides the following functionality for GitHub Actions users:
 
-- Optionally downloading and caching distribution of the requested Node.js version, and adding it to the PATH
+- Optionally downloading and caching distribution of the requested Node.js version **via cnpm mirror**, and adding it to the PATH
 - Optionally caching npm/yarn/pnpm dependencies
 - Registering problem matchers for error output
 - Configuring authentication for GPR or npm
@@ -94,20 +96,6 @@ See [action.yml](action.yml)
     # Default: ''
     scope: ''
 
-    # Optional mirror to download binaries from.
-    # Artifacts need to match the official Node.js
-    # Example:
-    # V8 Canary Build: <mirror_url>/download/v8-canary
-    # RC Build: <mirror_url>/download/rc
-    # Official: Build <mirror_url>/dist
-    # Nightly build: <mirror_url>/download/nightly
-    # Default: ''
-    mirror: ''
-
-    # Optional mirror token.
-    # The token will be used as a bearer token in the Authorization header
-    # Default: ''
-    mirror-token: ''
 ```
 <!-- end usage -->
 
@@ -125,7 +113,7 @@ steps:
 
 The `node-version` input is optional. If not supplied, the node version from PATH will be used. However, it is recommended to always specify Node.js version and not rely on the system one.
 
-The action will first check the local cache for a semver match. If unable to find a specific version in the cache, the action will attempt to download a version of Node.js. It will pull LTS versions from [node-versions releases](https://github.com/actions/node-versions/releases) and on miss or failure will fall back to downloading directly from [npm Mirror Node dist](https://cdn.npmmirror.com/binaries/node/).
+The action will first check the local cache for a semver match. If unable to find a specific version in the cache, the action will attempt to download a version of Node.js. It will pull LTS versions from [node-versions releases](https://github.com/actions/node-versions/releases) and on miss or failure will fall back to downloading directly from the [cnpm mirror](https://cdn.npmmirror.com/binaries/node/).
 
 For information regarding locally cached versions of Node.js on GitHub hosted runners, check out [GitHub Actions Runner Images](https://github.com/actions/runner-images).
 
@@ -143,7 +131,7 @@ Examples:
 **Note:** Like the other values, `*` will get the latest [locally-cached Node.js version](https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2204-Readme.md#nodejs), or the latest version from [actions/node-versions](https://github.com/actions/node-versions/blob/main/versions-manifest.json), depending on the [`check-latest`](docs/advanced-usage.md#check-latest-version) input.
 
 `current`/`latest`/`node` always resolve to the latest [dist version](https://nodejs.org/dist/index.json).
-That version is then downloaded from actions/node-versions if possible, or directly from https://cdn.npmmirror.com/binaries/node if not.
+That version is then downloaded from actions/node-versions if possible, or directly from the [cnpm mirror](https://cdn.npmmirror.com/binaries/node/) if not.
 Since it will not be cached always, there is possibility of hitting rate limit when downloading from dist
 
 ### Checking in lockfiles
@@ -249,7 +237,6 @@ If the runner is not able to access github.com, any Nodejs versions requested du
  - [Publishing to npmjs and GPR with npm](docs/advanced-usage.md#publish-to-npmjs-and-gpr-with-npm)
  - [Publishing to npmjs and GPR with yarn](docs/advanced-usage.md#publish-to-npmjs-and-gpr-with-yarn)
  - [Using private packages](docs/advanced-usage.md#use-private-packages)
- - [Using private mirror](docs/advanced-usage.md#use-private-mirror)
 
 ## Recommended permissions
 

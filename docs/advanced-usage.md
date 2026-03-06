@@ -474,18 +474,3 @@ steps:
 To access private GitHub Packages within the same organization, go to "Manage Actions access" in Package settings and set the repositories you want to access.
 
 Please refer to the [Ensuring workflow access to your package - Configuring a package's access control and visibility](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility#ensuring-workflow-access-to-your-package) for more details.
-
-## Use private mirror
-
-It is possible to use a private mirror hosting Node.js binaries. This mirror must be a full mirror of the official Node.js distribution.
-The mirror URL can be set using the `mirror` input.
-It is possible to specify a token to authenticate with the mirror using the `mirror-token` input.
-The token will be passed in the `Authorization` header.
-
-```yaml
-- uses: actions/setup-node@v6
-  with:
-    node-version: '24.x'
-    mirror: 'https://nodejs.org/dist'
-    mirror-token: 'your-mirror-token'
-```
