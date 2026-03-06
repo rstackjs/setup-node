@@ -4,6 +4,7 @@ import path from 'path';
 
 import BaseDistribution from '../base-distribution';
 import {NodeInputs, INodeVersion, INodeVersionInfo} from '../base-models';
+import {DEFAULT_NODE_MIRROR} from '../../constants';
 
 interface INodeRelease extends tc.IToolRelease {
   lts?: string;
@@ -66,7 +67,6 @@ export default class OfficialBuilds extends BaseDistribution {
       return;
     }
 
-    let downloadPath = '';
     try {
       core.info(`Attempting to download ${this.nodeInfo.versionSpec}...`);
 
@@ -78,27 +78,13 @@ export default class OfficialBuilds extends BaseDistribution {
       );
 
       if (versionInfo) {
+        this.nodeInfo.versionSpec = versionInfo.resolvedVersion;
         core.info(
-          `Acquiring ${versionInfo.resolvedVersion} - ${versionInfo.arch} from ${versionInfo.downloadUrl}`
+          `Resolved ${versionInfo.resolvedVersion} from manifest. Preparing to download from ${this.getFallbackDisplayUrl()}.`
         );
-        downloadPath = await tc.downloadTool(
-          versionInfo.downloadUrl,
-          undefined,
-          this.nodeInfo.mirror ? this.nodeInfo.mirrorToken : this.nodeInfo.auth
-        );
-
-        if (downloadPath) {
-          toolPath = await this.extractArchive(
-            downloadPath,
-            versionInfo,
-            false
-          );
-        }
       } else {
         core.info(
-          `Not found in manifest. Falling back to download directly from ${
-            this.nodeInfo.mirror || 'Node'
-          }`
+          `Not found in manifest. Falling back to download directly from ${this.getFallbackDisplayUrl()}`
         );
       }
     } catch (err) {
@@ -114,7 +100,9 @@ export default class OfficialBuilds extends BaseDistribution {
         core.info((err as Error).message);
       }
       core.debug((err as Error).stack ?? 'empty stack');
-      core.info('Falling back to download directly from Node');
+      core.info(
+        `Falling back to download directly from ${this.getFallbackDisplayUrl()}`
+      );
     }
 
     if (!toolPath) {
@@ -156,7 +144,7 @@ export default class OfficialBuilds extends BaseDistribution {
       if (error instanceof tc.HTTPError && error.httpStatusCode === 404) {
         core.warning(
           `Node version ${this.nodeInfo.versionSpec} for platform ${this.osPlat} and architecture ${this.nodeInfo.arch} was found but failed to download. ` +
-            'This usually happens when downloadable binaries are not fully updated at https://nodejs.org/. ' +
+            `This usually happens when downloadable binaries are not fully updated at ${this.getFallbackDisplayUrl()}. ` +
             'To resolve this issue you may either fall back to the older version or try again later.'
         );
       }
@@ -179,8 +167,11 @@ export default class OfficialBuilds extends BaseDistribution {
   }
 
   protected getDistributionUrl(mirror: string): string {
-    const url = mirror || 'https://nodejs.org';
-    return `${url}/dist`;
+    return DEFAULT_NODE_MIRROR;
+  }
+
+  private getFallbackDisplayUrl(): string {
+    return DEFAULT_NODE_MIRROR;
   }
 
   private getManifest(): Promise<tc.IToolRelease[]> {

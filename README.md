@@ -125,7 +125,7 @@ steps:
 
 The `node-version` input is optional. If not supplied, the node version from PATH will be used. However, it is recommended to always specify Node.js version and not rely on the system one.
 
-The action will first check the local cache for a semver match. If unable to find a specific version in the cache, the action will attempt to download a version of Node.js. It will pull LTS versions from [node-versions releases](https://github.com/actions/node-versions/releases) and on miss or failure will fall back to the previous behavior of downloading directly from [node dist](https://nodejs.org/dist/).
+The action will first check the local cache for a semver match. If unable to find a specific version in the cache, the action will attempt to download a version of Node.js. It will pull LTS versions from [node-versions releases](https://github.com/actions/node-versions/releases) and on miss or failure will fall back to downloading directly from [npm Mirror Node dist](https://cdn.npmmirror.com/binaries/node/).
 
 For information regarding locally cached versions of Node.js on GitHub hosted runners, check out [GitHub Actions Runner Images](https://github.com/actions/runner-images).
 
@@ -143,7 +143,7 @@ Examples:
 **Note:** Like the other values, `*` will get the latest [locally-cached Node.js version](https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2204-Readme.md#nodejs), or the latest version from [actions/node-versions](https://github.com/actions/node-versions/blob/main/versions-manifest.json), depending on the [`check-latest`](docs/advanced-usage.md#check-latest-version) input.
 
 `current`/`latest`/`node` always resolve to the latest [dist version](https://nodejs.org/dist/index.json).
-That version is then downloaded from actions/node-versions if possible, or directly from Node.js if not.
+That version is then downloaded from actions/node-versions if possible, or directly from https://cdn.npmmirror.com/binaries/node if not.
 Since it will not be cached always, there is possibility of hitting rate limit when downloading from dist
 
 ### Checking in lockfiles

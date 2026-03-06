@@ -11,6 +11,7 @@ import os from 'os';
 import fs from 'fs';
 
 import {NodeInputs, INodeVersion, INodeVersionInfo} from './base-models';
+import {DEFAULT_NODE_MIRROR} from '../constants';
 
 export default abstract class BaseDistribution {
   protected httpClient: hc.HttpClient;

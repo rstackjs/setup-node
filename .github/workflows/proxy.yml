@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       https_proxy: http://no-such-proxy:3128
-      no_proxy: api.github.com,github.com,nodejs.org,registry.npmjs.org,*.s3.amazonaws.com,s3.amazonaws.com
+      no_proxy: api.github.com,github.com,cdn.npmmirror.com,registry.npmjs.org,*.s3.amazonaws.com,s3.amazonaws.com
     steps:
       - uses: actions/checkout@v6
       - name: Clear tool cache
