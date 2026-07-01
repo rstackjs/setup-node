@@ -20,7 +20,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest, macos-latest]
         node-version: [20, 22, 24]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - name: Setup Node
         uses: ./
         with:
@@ -37,7 +37,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest, macos-latest]
         node-version: [20.10.0, 22.0.0, 24.9.0]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - name: Setup Node
         uses: ./
         with:
@@ -54,7 +54,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest, macos-latest]
         node-version: [20, 22, 24]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - name: Setup Node and check latest
         uses: ./
         with:
@@ -73,7 +73,7 @@ jobs:
         node-version-file:
           [.nvmrc, .tool-versions, .tool-versions-node, package.json]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - name: Setup node from node version file
         uses: ./
         with:
@@ -88,7 +88,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - name: Setup node from node version file
         uses: ./
         with:
@@ -103,7 +103,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - name: Setup node from node version file
         uses: ./
         with:
@@ -118,7 +118,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - name: Setup node from node version file
         uses: ./
         with:
@@ -134,7 +134,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest, macos-latest]
         node-version: [17, 19]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - name: Setup Node from dist
         uses: ./
         with:
@@ -150,7 +150,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-15-intel]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       # test old versions which didn't have npm and layout different
       - name: Setup node 0.12.18 from dist
         uses: ./
@@ -163,7 +163,7 @@ jobs:
   arch:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - name: Setup node 20 x86 from dist
         uses: ./
         with:
