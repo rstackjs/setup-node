@@ -329,36 +329,51 @@ steps:
 - run: npm test
 ```
 
-**Restore-Only Cache**
+**Restore-only cache**
+
+You can restore caches without saving new entries, which helps reduce cache writes and storage usage in read-only cache workflows.
 
 ```yaml
-## In some workflows, you may want to restore a cache without saving it. This can help reduce cache writes and storage usage in workflows that only need to read from cache
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      # Restore Node.js modules cache (restore-only)
-      - name: Restore Node modules cache
-        uses: actions/cache@v5
-        id: cache-node-modules
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      # Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-      # Install dependencies
-      - run: npm install
+steps:
+- uses: actions/checkout@v6
+# - uses: pnpm/action-setup@v6 
+#   with:
+#     version: 10
+
+- name: Setup Node.js
+  uses: actions/setup-node@v6
+  with:
+    node-version: '24'
+
+- name: Normalize runner architecture
+  shell: bash
+  run: echo "ARCH=$(echo '${{ runner.arch }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+    
+- name: Output of cache path
+  id: cachepath
+  shell: bash
+  run: echo "path=$(npm config get cache)" >> $GITHUB_OUTPUT
+  # run: echo "path=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+  # For yarn workflow, output of yarn cache dir (v1) or yarn config get cacheFolder (v2+)
+  # run: echo "path=$(yarn cache dir)" >> $GITHUB_OUTPUT 
+    
+- name: Restore Node cache
+  uses: actions/cache/restore@v5
+  with:
+    path: ${{ steps.cachepath.outputs.path }}
+    key: node-cache-${{ runner.os }}-${{ env.ARCH }}-npm-${{ hashFiles('**/package-lock.json') }}
+    # key: node-cache-${{ runner.os }}-${{ env.ARCH }}-yarn-${{ hashFiles('**/yarn.lock') }}
+    # key: node-cache-${{ runner.os }}-${{ env.ARCH }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+    
+- run: npm ci
+# - run: yarn install --frozen-lockfile # optional, --immutable
+# - run: pnpm install
 ```
+> **Note**: Uncomment the commands relevant to your project's package manager.
 
-> For more details related to cache scenarios, please refer [Node – npm](https://github.com/actions/cache/blob/main/examples.md#node---npm).
+> For more details related to cache scenarios, please refer [actions/cache/restore](https://github.com/actions/cache/tree/main/restore#only-restore-cache).
 
-## Multiple Operating Systems and Architectures
+## Multiple operating systems and architectures
 
 ```yaml
 jobs:
@@ -474,3 +489,42 @@ steps:
 To access private GitHub Packages within the same organization, go to "Manage Actions access" in Package settings and set the repositories you want to access.
 
 Please refer to the [Ensuring workflow access to your package - Configuring a package's access control and visibility](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility#ensuring-workflow-access-to-your-package) for more details.
+
+## Publishing to npm with Trusted Publisher (OIDC)
+
+npm supports Trusted Publishers, enabling packages to be published from GitHub Actions using OpenID Connect (OIDC) instead of long-lived npm tokens. This improves security by replacing static credentials with short-lived tokens, reducing the risk of credential leakage and simplifying authentication in CI/CD workflows.
+
+### Requirements
+
+Trusted publishing requires a compatible npm version:
+
+* **npm ≥ 11.5.1 (required)**
+* **Node.js 24 or newer (recommended)** — includes a compatible npm version by default
+
+> If npm is below 11.5.1, publishing will fail even if OIDC permissions are correctly configured.
+
+You must also configure a **Trusted Publisher** in npm for your package/scope that matches your GitHub repository and workflow (and optional environment, if used).
+
+### Example workflow
+
+```yaml
+    permissions:
+      contents: read
+      id-token: write  # Required for OIDC
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm publish
+```
+
+> **Note**: If the Trusted Publisher configuration (GitHub owner/repo/workflow file, and optional environment) does not match the workflow run identity exactly, publishing may fail with **E404 Not Found** even if the package exists on npm.
+
+For more details, see the [npm Trusted Publishers documentation](https://docs.npmjs.com/trusted-publishers) and the [GitHub Actions OpenID Connect (OIDC) overview](https://docs.github.com/en/actions/concepts/security/openid-connect).
