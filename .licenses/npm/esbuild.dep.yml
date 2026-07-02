@@ -1,6 +1,6 @@
 ---
 name: esbuild
-version: 0.27.3
+version: 0.28.1
 type: npm
 summary: An extremely fast JavaScript and CSS bundler and minifier.
 homepage: 
